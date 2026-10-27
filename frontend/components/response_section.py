@@ -62,10 +62,7 @@ def render_response_section(
     with cols[0]:
         st.metric(
             "Model",
-            usage.get(
-                "model",
-                "Cache",
-            ),
+            usage.get("display_model") or usage.get("model", "Cache"),
         )
 
     with cols[1]:
