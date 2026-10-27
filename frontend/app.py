@@ -1,3 +1,4 @@
+import inspect
 import sys
 import time
 from pathlib import Path
@@ -74,6 +75,7 @@ def _add_styles(dark_mode: bool) -> None:
         [data-testid="stButton"] button, [data-testid="stFormSubmitButton"] button {{ border-radius:11px; min-height:2.7rem; }}
         .pg-card {{ background:{panel}; border:1px solid {border}; border-radius:18px; padding:1.2rem 1.35rem; }}
         .pg-answer {{ line-height:1.72; }}
+        .pg-empty {{ min-height:78vh; display:grid; place-items:center; color:{accent}; font-size:2.2rem; opacity:.78; }}
         .pg-file {{ color:{muted}; font-size:.83rem; padding:.45rem 0 .9rem; overflow-wrap:anywhere; }}
         @media (max-width: 800px) {{ [data-testid="stSidebar"] {{ min-width:unset; width:75vw; }} }}
         </style>
@@ -99,13 +101,14 @@ def _render_sidebar():
         else:
             st.caption("PDF optional · up to 200 MB")
         st.divider()
-        prompt = st.chat_input(
-            "Type your prompt and press Enter",
-            key="prompt_input",
-            max_chars=120_000,
-            height="content",
-            disabled=False,
-        )
+        chat_kwargs = {
+            "key": "prompt_input",
+            "max_chars": 120_000,
+            "disabled": False,
+        }
+        if "height" in inspect.signature(st.chat_input).parameters:
+            chat_kwargs["height"] = "content"
+        prompt = st.chat_input("Type your prompt and press Enter", **chat_kwargs)
         return uploaded_file, prompt
 
 
@@ -170,6 +173,8 @@ def main() -> None:
     state = st.session_state.last_result
     if state:
         _render_answer(state)
+    else:
+        st.markdown('<div class="pg-empty">✦</div>', unsafe_allow_html=True)
 
 
 if __name__ == "__main__":
