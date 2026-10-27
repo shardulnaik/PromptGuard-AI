@@ -48,10 +48,6 @@ def get_job(job_id: str) -> dict:
     return response.json()
 
 
-def _sync_prompt() -> None:
-    st.session_state.prompt_text = st.session_state.get("prompt_widget", "")
-
-
 def _add_styles(dark_mode: bool) -> None:
     if dark_mode:
         bg, panel, text, muted, border, accent = (
@@ -73,14 +69,11 @@ def _add_styles(dark_mode: bool) -> None:
         .pg-brand {{ font-size:1.15rem; font-weight:750; letter-spacing:-.03em; color:{text}; margin:.2rem 0 2rem; }}
         .pg-kicker {{ color:{accent}; text-transform:uppercase; letter-spacing:.12em; font-size:.74rem; font-weight:700; }}
         .pg-subtitle {{ color:{muted}; margin-top:-.5rem; }}
-        .pg-empty {{ display:flex; align-items:center; justify-content:center; min-height:42vh; text-align:center; color:{muted}; }}
-        .pg-empty-mark {{ color:{accent}; font-size:2rem; margin-bottom:.8rem; }}
-        [data-testid="stTextArea"] textarea {{ background:{panel}; border-color:{border}; color:{text}; border-radius:16px; padding:1rem; }}
+        [data-testid="stTextArea"] textarea, [data-testid="stChatInput"] textarea {{ background:{panel}; border-color:{border}; color:{text}; border-radius:14px; padding:.8rem; }}
         [data-testid="stFileUploader"] section {{ background:{panel}; border:1px dashed {border}; border-radius:14px; }}
         [data-testid="stButton"] button, [data-testid="stFormSubmitButton"] button {{ border-radius:11px; min-height:2.7rem; }}
         .pg-card {{ background:{panel}; border:1px solid {border}; border-radius:18px; padding:1.2rem 1.35rem; }}
         .pg-answer {{ line-height:1.72; }}
-        .st-key-composer {{ background:{panel}; border:1px solid {border}; border-radius:18px; padding:1rem 1.2rem .5rem; }}
         .pg-file {{ color:{muted}; font-size:.83rem; padding:.45rem 0 .9rem; overflow-wrap:anywhere; }}
         @media (max-width: 800px) {{ [data-testid="stSidebar"] {{ min-width:unset; width:75vw; }} }}
         </style>
@@ -92,12 +85,10 @@ def _add_styles(dark_mode: bool) -> None:
 def _render_sidebar():
     with st.sidebar:
         st.markdown('<div class="pg-brand">🛡️ PromptGuard-AI</div>', unsafe_allow_html=True)
-        st.markdown("**Your document**")
         uploaded_file = st.file_uploader(
-            "Upload a PDF",
+            "Upload document",
             type=["pdf"],
             help="Optional. PDFs of 1 MiB or larger route to HIGH.",
-            label_visibility="collapsed",
             key="uploaded_pdf",
         )
         if uploaded_file:
@@ -108,40 +99,14 @@ def _render_sidebar():
         else:
             st.caption("PDF optional · up to 200 MB")
         st.divider()
-        if st.session_state.page == "about":
-            if st.button("← Back to workspace", use_container_width=True):
-                st.session_state.page = "home"
-                st.rerun()
-        else:
-            st.toggle("Dark mode", key="dark_mode")
-            st.divider()
-            if st.button("ⓘ  About this website", use_container_width=True):
-                st.session_state.page = "about"
-                st.rerun()
-        return uploaded_file
-
-
-def _render_about() -> None:
-    st.markdown('<div class="pg-kicker">About PromptGuard-AI</div>', unsafe_allow_html=True)
-    st.title("How this app works")
-    st.markdown('<p class="pg-subtitle">A protected prompt in, a routed answer out.</p>', unsafe_allow_html=True)
-    steps = st.columns(5)
-    for column, (number, label) in zip(
-        steps,
-        [("01", "Security scan"), ("02", "Semantic cache"), ("03", "Local ML router"), ("04", "Selected model"), ("05", "Answer")],
-    ):
-        with column:
-            st.markdown(f"<div class='pg-card'><span class='pg-kicker'>{number}</span><br><b>{label}</b></div>", unsafe_allow_html=True)
-    st.write("")
-    st.markdown(
-        """
-        - **LOW → Groq:** simple factual questions and definitions.
-        - **MEDIUM → Gemini:** basic calculations, ordinary coding, and short document tasks.
-        - **HIGH → OpenAI GPT:** complex reasoning, demanding coding, and detailed analysis.
-
-        The classifier runs locally. A PDF of at least **1 MiB** always uses HIGH, and uncertain predictions conservatively use HIGH. Security blocks stop before generation; valid cache hits return without another model call.
-        """
-    )
+        prompt = st.chat_input(
+            "Type your prompt and press Enter",
+            key="prompt_input",
+            max_chars=120_000,
+            height="content",
+            disabled=False,
+        )
+        return uploaded_file, prompt
 
 
 def _run_request(prompt: str, uploaded_file) -> None:
@@ -189,51 +154,22 @@ def _render_answer(state: dict) -> None:
 
 
 def main() -> None:
-    st.session_state.setdefault("page", "home")
-    st.session_state.setdefault("dark_mode", True)
-    st.session_state.setdefault("prompt_text", "")
     st.session_state.setdefault("last_result", None)
     st.session_state.setdefault("request_error", None)
-    _add_styles(st.session_state.dark_mode)
-    uploaded_file = _render_sidebar()
+    _add_styles(dark_mode=True)
+    uploaded_file, prompt = _render_sidebar()
 
-    if st.session_state.page == "about":
-        _render_about()
-        return
+    if prompt is not None:
+        st.session_state.last_result = None
+        st.session_state.request_error = None
+        _run_request(prompt, uploaded_file)
+        st.rerun()
 
-    st.markdown('<div class="pg-kicker">Quality-aware prompt routing</div>', unsafe_allow_html=True)
-    st.title("What would you like to work on?")
-    st.markdown('<p class="pg-subtitle">Ask a question with or without a PDF. PromptGuard handles the routing.</p>', unsafe_allow_html=True)
     if st.session_state.request_error:
         st.error(st.session_state.request_error)
     state = st.session_state.last_result
     if state:
         _render_answer(state)
-    else:
-        st.markdown(
-            '<div class="pg-empty"><div><div class="pg-empty-mark">✦</div><div>Your answer will appear here.</div></div></div>',
-            unsafe_allow_html=True,
-        )
-
-    st.session_state.setdefault("prompt_widget", st.session_state.prompt_text)
-    with st.container(border=True, key="composer"):
-        st.text_area(
-            "Your prompt",
-            placeholder="Ask a question, request an explanation, or describe a task…",
-            height="content",
-            label_visibility="collapsed",
-            key="prompt_widget",
-            on_change=_sync_prompt,
-        )
-        submitted = st.button("➤  Ask", type="primary")
-
-    if submitted:
-        prompt = st.session_state.get("prompt_widget", st.session_state.prompt_text)
-        st.session_state.prompt_text = prompt
-        st.session_state.last_result = None
-        st.session_state.request_error = None
-        _run_request(prompt, uploaded_file)
-        st.rerun()
 
 
 if __name__ == "__main__":

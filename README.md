@@ -43,7 +43,7 @@ The script prints per-class precision, recall, F1, support, and a confusion matr
 
 The API is available at `http://127.0.0.1:8000`; the health check is `/health`.
 
-The Streamlit workspace keeps optional PDF upload and navigation in the sidebar, shows the generated answer in the main view, and opens pipeline diagnostics with **View test results**. The UI identifies the LOW provider as Groq; Groq's required API model ID remains `openai/gpt-oss-20b` internally.
+The Streamlit workspace keeps the optional PDF uploader and prompt input in the sidebar, submits prompts with Enter, shows the answer in the main view, and opens pipeline diagnostics with **View test results**. The UI identifies the LOW provider as Groq; Groq's required API model ID remains `openai/gpt-oss-20b` internally.
 
 ## Tests
 
