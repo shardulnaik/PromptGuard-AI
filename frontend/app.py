@@ -113,7 +113,7 @@ def _render_sidebar():
                 st.session_state.page = "home"
                 st.rerun()
         else:
-        st.toggle("Dark mode", key="dark_mode")
+            st.toggle("Dark mode", key="dark_mode")
             st.divider()
             if st.button("ⓘ  About this website", use_container_width=True):
                 st.session_state.page = "about"
