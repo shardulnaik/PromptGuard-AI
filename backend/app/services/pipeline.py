@@ -282,6 +282,8 @@ class PromptGuardPipeline:
             "response": generation_result["response"],
             "model_usage": {
                 "model": routing_result["model"],
+            "provider": routing_result["provider"],
+            "display_model": routing_result["display_model"],
                 "cache_hit": False,
                 "input_tokens": generation_result[
                     "input_tokens"

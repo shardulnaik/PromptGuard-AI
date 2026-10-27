@@ -59,6 +59,19 @@ def select_tier(
     return {
         "tier": tier,
         "model": get_model_for_tier(tier),
+        "provider": {"LOW": "Groq", "MEDIUM": "Gemini", "HIGH": "OpenAI"}[tier],
+        "display_model": _display_model(tier, get_model_for_tier(tier)),
         "confidence": confidence,
         "reason": reason,
     }
+
+
+def _display_model(tier: str, model: str) -> str:
+    if tier == "LOW":
+        # Groq hosts OpenAI's open-weight GPT-OSS model; the API ID must retain
+        # its `openai/` namespace, while the UI should identify Groq as provider.
+        name = model.rsplit("/", 1)[-1].replace("gpt-oss-", "GPT-OSS ").upper()
+        return f"Groq · {name}"
+    if tier == "MEDIUM":
+        return f"Gemini · {model}"
+    return f"OpenAI · {model}"
