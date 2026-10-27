@@ -8,7 +8,7 @@ from backend.app.security.rules import detect_prompt_injection
 
 class SecurityScanner:
     def __init__(self) -> None:
-        self.client = OpenAI(api_key=OPENAI_API_KEY)
+        self.client = OpenAI(api_key=OPENAI_API_KEY) if OPENAI_API_KEY else None
 
     def scan(self, text: str) -> dict[str, Any]:
         """
@@ -26,6 +26,8 @@ class SecurityScanner:
         moderation_error = None
 
         try:
+            if self.client is None:
+                raise RuntimeError("OpenAI moderation is not configured")
             moderation = self.client.moderations.create(
                 model=MODERATION_MODEL,
                 input=text,
@@ -35,7 +37,7 @@ class SecurityScanner:
             moderation_flagged = bool(result.flagged)
 
         except Exception as exc:
-            moderation_error = str(exc)
+            moderation_error = type(exc).__name__
 
         blocked = bool(injection_findings or moderation_flagged)
 

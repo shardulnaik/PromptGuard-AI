@@ -24,18 +24,13 @@ CHROMA_DIR.mkdir(parents=True, exist_ok=True)
 # -----------------------------
 
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+GROQ_API_KEY = os.getenv("GROQ_API_KEY")
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
-if not OPENAI_API_KEY:
-    raise RuntimeError(
-        f"OPENAI_API_KEY was not found in {ENV_PATH}. "
-        "Make sure your .env file exists in the project root."
-    )
+LOW_MODEL = os.getenv("GROQ_MODEL", "openai/gpt-oss-20b")
+MEDIUM_MODEL = os.getenv("GEMINI_MODEL", "gemini-3.5-flash-lite")
+HIGH_MODEL = os.getenv("OPENAI_MODEL", os.getenv("HIGH_MODEL", "gpt-5.4"))
 
-LOW_MODEL = os.getenv("LOW_MODEL", "gpt-5.4-nano")
-MEDIUM_MODEL = os.getenv("MEDIUM_MODEL", "gpt-5.4-mini")
-HIGH_MODEL = os.getenv("HIGH_MODEL", "gpt-5.4")
-
-ANALYZER_MODEL = os.getenv("ANALYZER_MODEL", "gpt-5.4-nano")
 MODERATION_MODEL = os.getenv(
     "MODERATION_MODEL",
     "omni-moderation-latest",
@@ -46,8 +41,7 @@ MODERATION_MODEL = os.getenv(
 # Routing
 # -----------------------------
 
-LOW_THRESHOLD = float(os.getenv("LOW_THRESHOLD", "3.5"))
-HIGH_THRESHOLD = float(os.getenv("HIGH_THRESHOLD", "7.0"))
+ROUTER_MODEL_PATH = Path(__file__).resolve().parent / "router" / "artifacts" / "tier_classifier.joblib"
 
 
 # -----------------------------

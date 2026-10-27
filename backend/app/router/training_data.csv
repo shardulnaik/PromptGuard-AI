@@ -1,0 +1,43 @@
+﻿text,label
+"What is the capital of France?",LOW
+"Define photosynthesis in one sentence",LOW
+"Who wrote Pride and Prejudice?",LOW
+"What is the boiling point of water?",LOW
+"How many days are in a leap year?",LOW
+"What does HTTP stand for?",LOW
+"Name the largest planet in our solar system",LOW
+"When did the Berlin Wall fall?",LOW
+"What is the chemical symbol for gold?",LOW
+"Translate hello into Spanish",LOW
+"Give me a synonym for quick",LOW
+"What is 9 times 7?",MEDIUM
+"Calculate the area of a circle with radius 4",MEDIUM
+"Write a Python function that checks whether a number is even",MEDIUM
+"Explain this short Python error and suggest a fix",MEDIUM
+"Summarize the attached one page meeting notes",MEDIUM
+"Extract the dates and names from this short memo",MEDIUM
+"Convert this list of names into alphabetical order",MEDIUM
+"Explain the difference between a list and tuple in Python",MEDIUM
+"Summarize this short article in three bullet points",MEDIUM
+"Write a SQL query to count orders by customer",MEDIUM
+"What is 125 divided by 5?",MEDIUM
+"Review this short paragraph for grammar",MEDIUM
+"Compare these two short product descriptions",MEDIUM
+"Debug this small JavaScript function that returns the wrong value",MEDIUM
+"Design a distributed system architecture for a global payments platform with fault tolerance and consistency tradeoffs",HIGH
+"Analyze the competing hypotheses and build a step by step argument using the evidence below",HIGH
+"Debug this concurrent Python service and explain the race condition and safe redesign",HIGH
+"Develop a migration plan for splitting a monolith with dependency risks rollback steps and measurable milestones",HIGH
+"Evaluate the long report, reconcile contradictory findings, and produce an executive synthesis with caveats",HIGH
+"Prove the theorem and identify every assumption used in the proof",HIGH
+"Create a security threat model for this authentication system and prioritize mitigations",HIGH
+"Compare these legal clauses, identify conflicts, and explain the implications across jurisdictions",HIGH
+"Build a detailed financial scenario analysis with sensitivity ranges and explain the assumptions",HIGH
+"Investigate this production outage from the logs, identify root cause, and propose durable fixes",HIGH
+"Summarize this 200 page technical specification while preserving dependencies, exceptions, and unresolved decisions",HIGH
+"Plan a multi stage research study including controls, confounders, statistical power, and analysis",HIGH
+"Refactor this complex codebase design and explain compatibility risks and a staged rollout",HIGH
+"Reason through this multi constraint scheduling problem and show why the proposed solution is optimal",HIGH
+"What is the currency of Japan?",LOW
+"How many sides does a hexagon have?",LOW
+"What is the square root of 81?",LOW

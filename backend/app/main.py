@@ -198,7 +198,7 @@ def run_pipeline_job(
 
         with JOBS_LOCK:
             JOBS[job_id]["status"] = "failed"
-            JOBS[job_id]["error"] = str(exc)
+            JOBS[job_id]["error"] = f"{type(exc).__name__}: {exc}" if "API_KEY" in str(exc) else f"Provider or pipeline error ({type(exc).__name__}). Check backend logs."
             JOBS[job_id]["updated_at"] = now_iso()
 
 

@@ -3,7 +3,7 @@ from typing import Any, Callable
 from backend.app.analyzer.prompt_analyzer import PromptAnalyzer
 from backend.app.cache.semantic_cache import SemanticCache
 from backend.app.config import MAX_CONTENT_CHARS
-from backend.app.providers.openai_provider import OpenAIProvider
+from backend.app.providers.provider_registry import provider_for_tier
 from backend.app.router.router import select_tier
 from backend.app.security.scanner import SecurityScanner
 
@@ -20,7 +20,6 @@ class PromptGuardPipeline:
         self.security = SecurityScanner()
         self.cache = SemanticCache()
         self.analyzer = PromptAnalyzer()
-        self.provider = OpenAIProvider()
 
     def process(
         self,
@@ -222,7 +221,7 @@ class PromptGuardPipeline:
         )
 
         routing_result = select_tier(
-            analysis_result,
+            {**analysis_result, "routing_text": full_content_for_analysis},
             document_size_bytes=document_size_bytes,
         )
 
@@ -244,7 +243,7 @@ class PromptGuardPipeline:
             },
         )
 
-        generation_result = self.provider.generate(
+        generation_result = provider_for_tier(routing_result["tier"]).generate(
             model=routing_result["model"],
             user_prompt=prompt,
             content=combined_content,

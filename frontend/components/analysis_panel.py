@@ -209,3 +209,6 @@ def render_analysis_panel(
         if reason:
             st.markdown("**Routing Reason**")
             st.caption(reason)
+        confidence = routing.get("confidence")
+        if confidence is not None:
+            st.caption(f"Classifier confidence: {confidence:.1%}")

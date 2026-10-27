@@ -17,9 +17,7 @@ MODEL_REASONING_EFFORT = {
 
 class OpenAIProvider:
     def __init__(self) -> None:
-        self.client = OpenAI(
-            api_key=OPENAI_API_KEY
-        )
+        self.client = OpenAI(api_key=OPENAI_API_KEY) if OPENAI_API_KEY else None
 
     def generate(
         self,
@@ -28,6 +26,8 @@ class OpenAIProvider:
         content: str,
     ) -> dict[str, Any]:
 
+        if self.client is None:
+            raise RuntimeError("OPENAI_API_KEY is not configured")
         reasoning_effort = MODEL_REASONING_EFFORT.get(
             model,
             "medium",
